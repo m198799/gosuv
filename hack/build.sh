@@ -19,7 +19,7 @@ cd ${DESTINATION_DIR}
 
 echo "ready to build gosuv in ${DESTINATION_DIR}"
 go generate
-go build -tags vfs "$@"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags vfs "$@"
 
 rsync -a gosuv ${CURRENT_DIR}/bin/
 

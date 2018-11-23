@@ -92,6 +92,11 @@ func main() {
 			Action: actionStop,
 		},
 		{
+			Name:   "restart",
+			Usage:  "Restart program",
+			Action: actionReStartProgram,
+		},
+		{
 			Name:   "reload",
 			Usage:  "Reload config file",
 			Action: actionReload,

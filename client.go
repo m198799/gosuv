@@ -216,6 +216,31 @@ func actionStop(c *cli.Context) (err error) {
 	return nil
 }
 
+func actionReStartProgram(c *cli.Context) (err error) {
+	name := c.Args().First()
+	success, err := programOperate("stop", name)
+	if err != nil {
+		return
+	}
+	if !success {
+		fmt.Println(name, "Stop failed")
+	} else {
+		fmt.Println(name, "Stopted")
+	}
+
+	success, err = programOperate("start", name)
+	if err != nil {
+		return
+	}
+	if success {
+		fmt.Println(name, "Started")
+	} else {
+		fmt.Println(name, "Start failed")
+	}
+
+	return nil
+}
+
 // cmd: <start|stop>
 func programOperate(cmd, name string) (success bool, err error) {
 
