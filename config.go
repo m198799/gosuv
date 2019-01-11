@@ -1,11 +1,9 @@
 package main
 
 import (
+	"github.com/go-yaml/yaml"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-
-	"github.com/go-yaml/yaml"
 )
 
 type Configuration struct {
@@ -57,22 +55,24 @@ type GosuvLog struct {
 func readConf(filename string) (c Configuration, err error) {
 	// initial default value
 	// 初始化配置文件 如果config.yml不存在的时候.
+
+	path := getExecPath()
 	c.Server.HttpServer.Enabled = true
 	c.Server.HttpServer.Addr = ":11333"
 
 	c.Server.UnixServer.Enabled = true
-	c.Server.UnixServer.SockFile = ".gosuv.sock"
+	c.Server.UnixServer.SockFile = path + "/.gosuv.sock"
 
-	c.Server.Log.LogPath = "logs"
+	c.Server.Log.LogPath = path + "/logs"
 
-	c.Client.ServerURL = "unix://.gosuv.sock"
-	c.Server.PidFile = ".gosuv.pid"
+	c.Client.ServerURL = "unix://" + path + "/.gosuv.sock"
+	c.Server.PidFile = path + "/.gosuv.pid"
 
 	c.Server.Log.Backups = 7
 	c.Server.Log.Level = "info"
 	c.Server.Log.FileMax = 10000
 
-	data, err := ioutil.ReadFile(filename)
+	data, err := ioutil.ReadFile(path + "/" + filename)
 	if err != nil {
 		data = []byte("")
 	}
@@ -80,12 +80,11 @@ func readConf(filename string) (c Configuration, err error) {
 	if err != nil {
 		return
 	}
-	cfgDir := filepath.Dir(filename)
-	if !IsDir(CfgDir) {
-		os.MkdirAll(cfgDir, 0755)
+	if !IsDir(path) {
+		os.MkdirAll(path, 0755)
 	}
 	data, _ = yaml.Marshal(c)
-	err = ioutil.WriteFile(filename, data, 0640)
+	err = ioutil.WriteFile(path+"/"+filename, data, 0640)
 
 	return
 }

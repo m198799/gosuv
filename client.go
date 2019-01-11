@@ -216,7 +216,7 @@ func actionStop(c *cli.Context) (err error) {
 	return nil
 }
 
-func actionReStartProgram(c *cli.Context) (err error) {
+func actionRestartProgram(c *cli.Context) (err error) {
 	name := c.Args().First()
 	success, err := programOperate("stop", name)
 	if err != nil {
@@ -224,10 +224,10 @@ func actionReStartProgram(c *cli.Context) (err error) {
 	}
 	if !success {
 		fmt.Println(name, "Stop failed")
+		return
 	} else {
 		fmt.Println(name, "Stopted")
 	}
-
 	success, err = programOperate("start", name)
 	if err != nil {
 		return

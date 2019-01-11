@@ -13,7 +13,7 @@ var cl = &Client{}
 func main() {
 
 	//初始global 变量
-	CfgDir = getCurrentPath()
+	CfgDir = getExecPath()
 	CurrentDir = getCurrentPath()
 	CmdDir = getExecPath()
 
@@ -28,7 +28,7 @@ func main() {
 		if filepath.IsAbs(CfgFile) {
 			CfgDir = filepath.Dir(CfgFile)
 		} else {
-			CfgDir = filepath.Dir(filepath.Join(getCurrentPath(), CfgFile))
+			CfgDir = filepath.Dir(filepath.Join(getExecPath(), CfgFile))
 		}
 		Cfg, err = readConf(CfgFile)
 		if err != nil {
@@ -94,7 +94,7 @@ func main() {
 		{
 			Name:   "restart",
 			Usage:  "Restart program",
-			Action: actionReStartProgram,
+			Action: actionRestartProgram,
 		},
 		{
 			Name:   "reload",

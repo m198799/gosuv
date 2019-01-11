@@ -117,7 +117,7 @@ func StringFormat(format string, m map[string]interface{}) string {
 }
 
 func getCurrentPath() string {
-	pwd, _ := os.Getwd()
+	pwd, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	return pwd
 }
 

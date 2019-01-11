@@ -509,7 +509,6 @@ func (s *Supervisor) hStopProgram(w http.ResponseWriter, r *http.Request) {
 		})
 	} else {
 		proc.Operate(StopEvent)
-		proc.Operate(StartEvent)
 		data, _ = json.Marshal(map[string]interface{}{
 			"status": 0,
 			"name":   name,
@@ -530,6 +529,7 @@ func (s *Supervisor) hRestartProgram(w http.ResponseWriter, r *http.Request) {
 		})
 	} else {
 		proc.Operate(StopEvent)
+		proc.Operate(StartEvent)
 		data, _ = json.Marshal(map[string]interface{}{
 			"status": 0,
 			"name":   name,
