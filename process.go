@@ -246,7 +246,7 @@ func NewProcess(pg Program) *Process {
 		pr.StopTimeout = 3
 	}
 
-		pr.AddHandler(Stopped, StartEvent, func() {
+	pr.AddHandler(Stopped, StartEvent, func() {
 		pr.retryLeft = pr.StartRetries
 		pr.startCommand()
 	})

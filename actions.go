@@ -59,9 +59,7 @@ func actionStartServer(c *cli.Context) error {
 	if actionServerStatus() == nil {
 		return fmt.Errorf("server is already running\n")
 	}
-
 	return ser.startServer(foregroud)
-
 }
 
 // start server , HTTP or Unix
@@ -86,7 +84,6 @@ func (s *Server) startServer(foregroud bool) error {
 	} else {
 		listenAddr = ""
 	}
-
 	//日志目录添加
 	logC := Cfg.Server.Log
 	logFile := filepath.Join(logC.LogPath, DefaultGoSuvLogFile)
@@ -114,7 +111,6 @@ func (s *Server) startServer(foregroud bool) error {
 	}
 
 	http.Handle("/", hdlr)
-
 	// 直接启动
 	if foregroud {
 		log.Info("----------- start server -----------")
@@ -127,17 +123,20 @@ func (s *Server) startServer(foregroud bool) error {
 			}
 			log.Infof("sock file  %v", unixListenerAddr)
 			go http.Serve(unixListener, nil)
+			//time.Sleep(200 * time.Millisecond)
 		}
 		if s.HTTPServer {
-			if err != nil {
-				log.Critical(err)
-				return err
+			_, err := net.DialTimeout("tcp", "127.0.0.1"+s.HTTPAddr, time.Millisecond*100)
+			if err == nil {
+				return errors.New("server listen" + listenAddr + "false:" + listenAddr + " is used ")
 			}
 			log.Infof("server listen on %v", listenAddr)
-			log.Critical(http.ListenAndServe(listenAddr, nil))
+			go http.ListenAndServe(listenAddr, nil)
+			//time.Sleep(200 * time.Millisecond)
 		}
-		return errors.New("server listen nothing ,exit .")
-
+		if !s.HTTPServer && !s.UnixServer {
+			return errors.New("server listen nothing ,exit .")
+		}
 	} else {
 		cmd := exec.Command(os.Args[0], "-c", CfgFile, "start-server", "-f")
 		cmd.Stdout = logFd
@@ -155,9 +154,15 @@ func (s *Server) startServer(foregroud bool) error {
 
 		select {
 		case err = <-GoFunc(cmd.Wait):
-			return fmt.Errorf("server started failed,check log %s, %v\n", logFile, err)
-		case <-time.After(200 * time.Millisecond):
+			if err != nil {
+				log.Infof("startServer false")
+				os.Remove(s.SockFile)
+				os.Remove(s.PidFile)
+				return fmt.Errorf("server started failed,check log %s, %v\n", logFile, err)
+			}
 			fmt.Printf("server started, listening  %s %s \n", listenAddr, unixListenerAddr)
+			//case <-time.After(200 * time.Millisecond):
+			//	fmt.Printf("server started, listening  %s %s \n", listenAddr, unixListenerAddr)
 		}
 	}
 	return nil

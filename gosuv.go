@@ -70,16 +70,14 @@ func main() {
 			Action: actionStartServer,
 		},
 		{
-			Name:    "status",
-			Aliases: []string{"st"},
-			Usage:   "Show program status",
-			Action:  actionProgramStatus,
+			Name:   "status",
+			Usage:  "Show program status",
+			Action: actionProgramStatus,
 		},
 		{
-			Name:    "status-server",
-			Aliases: []string{"st"},
-			Usage:   "Show server status",
-			Action:  actionStatus,
+			Name:   "status-server",
+			Usage:  "Show server status",
+			Action: actionStatus,
 		},
 		{
 			Name:   "start",
@@ -108,12 +106,12 @@ func main() {
 		},
 		{
 			Name:   "kill",
-			Usage:  "kill stop server by pid file.",
+			Usage:  "Kill stop server by pid file.",
 			Action: actionKill,
 		},
 		{
 			Name:   "restart-server",
-			Usage:  "restart server",
+			Usage:  "Restart server",
 			Action: actionRestart,
 		},
 		{
@@ -123,9 +121,10 @@ func main() {
 			Action:  actionConfigTest,
 		},
 		{
-			Name:   "edit",
-			Usage:  "Edit config file",
-			Action: actionEdit,
+			Name:    "edit",
+			Aliases: []string{"e"},
+			Usage:   "Edit config file",
+			Action:  actionEdit,
 		},
 		{
 			Name:    "version",

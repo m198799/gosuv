@@ -19,6 +19,7 @@ import (
 	log "github.com/cihub/seelog"
 	_ "github.com/shurcooL/vfsgen"
 	"github.com/urfave/cli"
+	"time"
 )
 
 type Client struct {
@@ -228,6 +229,7 @@ func actionRestartProgram(c *cli.Context) (err error) {
 	} else {
 		fmt.Println(name, "Stopted")
 	}
+	time.Sleep(1 * time.Second)
 	success, err = programOperate("start", name)
 	if err != nil {
 		return

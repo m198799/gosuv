@@ -529,6 +529,7 @@ func (s *Supervisor) hRestartProgram(w http.ResponseWriter, r *http.Request) {
 		})
 	} else {
 		proc.Operate(StopEvent)
+		time.Sleep(1 * time.Second)
 		proc.Operate(StartEvent)
 		data, _ = json.Marshal(map[string]interface{}{
 			"status": 0,

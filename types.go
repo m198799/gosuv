@@ -1,24 +1,24 @@
 package main
 
 const (
-	DefaultConfig string = "config.yml"
-	DefaultProgramFile string = "programs.yml"
-	DefaultPidFile string = ".gosuv.pid"
-	DefaultSockFile string = ".gosuv.sock"
-	DefaultGoSuvLogFile string ="gosuv.log"
-	AppName string = "gosuv"
-	Version string = "201811020427"
-	Author string = "codeskyblue,ajian521 modify by panxu"
-	Email string = "panxu@rongcloud.cn"
+	DefaultConfig       string = "config.yml"
+	DefaultProgramFile  string = "programs.yml"
+	DefaultPidFile      string = ".gosuv.pid"
+	DefaultSockFile     string = ".gosuv.sock"
+	DefaultGoSuvLogFile string = "gosuv.log"
+	AppName             string = "gosuv"
+	Version             string = "201811020427"
+	Author              string = "codeskyblue,ajian521 modify by panxu"
+	Email               string = "panxu@rongcloud.cn"
 )
 
 // Global var
 var (
-	Cfg     Configuration
-    CfgDir string
-    CfgFile string
-    CmdDir string   //命令行所在目录
-    CurrentDir string //当前命令执行所在目录
+	Cfg        Configuration
+	CfgDir     string
+	CfgFile    string
+	CmdDir     string //命令行所在目录
+	CurrentDir string //当前命令执行所在目录
 )
 
 type Program struct {
@@ -32,7 +32,7 @@ type Program struct {
 	StopTimeout   int      `yaml:"stop_timeout,omitempty" json:"stopTimeout"`
 	User          string   `yaml:"user,omitempty" json:"user"`
 	LogDisable    bool     `yaml:"log_disable" json:"log_disable"`
-	StderrOnly    bool    `yaml:"stderr_only,omitempty" json:"stderr_only"`
+	StderrOnly    bool     `yaml:"stderr_only,omitempty" json:"stderr_only"`
 	Notifications struct {
 		Pushover struct {
 			ApiKey string   `yaml:"api_key"`
