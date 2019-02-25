@@ -3,11 +3,11 @@ package main
 const (
 	DefaultConfig       string = "config.yml"
 	DefaultProgramFile  string = "programs.yml"
-	DefaultPidFile      string = ".gosuv.pid"
-	DefaultSockFile     string = ".gosuv.sock"
+	DefaultPidFile      string = "gosuv.pid"
+	DefaultSockFile     string = "gosuv.sock"
 	DefaultGoSuvLogFile string = "gosuv.log"
 	AppName             string = "gosuv"
-	Version             string = "201811020427"
+	Version             string = "201902121030"
 	Author              string = "codeskyblue,ajian521 modify by panxu"
 	Email               string = "panxu@rongcloud.cn"
 )

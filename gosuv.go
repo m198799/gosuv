@@ -49,13 +49,13 @@ func main() {
 		cli.StringFlag{
 			Name:  "conf, c",
 			Usage: "config file",
-			Value: DefaultConfig,
+			Value: CfgFile + DefaultConfig,
 		},
 	}
 	app.Commands = []cli.Command{
 		{
 			Name:  "start-server",
-			Usage: "Start supervisor and run in background",
+			Usage: "Start server and run in background",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "foreground, f",
@@ -64,20 +64,35 @@ func main() {
 				cli.StringFlag{
 					Name:  "conf, c",
 					Usage: "config file",
-					Value: DefaultConfig,
+					Value: CfgFile + DefaultConfig,
 				},
 			},
 			Action: actionStartServer,
 		},
 		{
+			Name:   "status-server",
+			Usage:  "Status server",
+			Action: actionStatus,
+		},
+		{
+			Name:   "stop-server",
+			Usage:  "Stop server",
+			Action: actionShutdown,
+		},
+		{
+			Name:   "restart-server",
+			Usage:  "Restart server",
+			Action: actionRestart,
+		},
+		{
+			Name:   "kill-server",
+			Usage:  "Kill server by pid file.",
+			Action: actionKill,
+		},
+		{
 			Name:   "status",
 			Usage:  "Show program status",
 			Action: actionProgramStatus,
-		},
-		{
-			Name:   "status-server",
-			Usage:  "Show server status",
-			Action: actionStatus,
 		},
 		{
 			Name:   "start",
@@ -98,21 +113,6 @@ func main() {
 			Name:   "reload",
 			Usage:  "Reload config file",
 			Action: actionReload,
-		},
-		{
-			Name:   "shutdown",
-			Usage:  "Shutdown server",
-			Action: actionShutdown,
-		},
-		{
-			Name:   "kill",
-			Usage:  "Kill stop server by pid file.",
-			Action: actionKill,
-		},
-		{
-			Name:   "restart-server",
-			Usage:  "Restart server",
-			Action: actionRestart,
 		},
 		{
 			Name:    "conftest",

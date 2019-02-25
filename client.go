@@ -151,8 +151,9 @@ func actionStatus(c *cli.Context) error {
 func actionProgramStatus(c *cli.Context) error {
 
 	var programs = make([]struct {
-		Program Program `json:"program"`
-		Status  string  `json:"status"`
+		Program Program                `json:"program"`
+		Status  string                 `json:"status"`
+		Cmd     map[string]interface{} `json:"cmd"`
 	}, 0)
 
 	request, _ := http.NewRequest(cl.Action["getProgramStatus"].Method, cl.Addr+cl.Action["getProgramStatus"].Uri, nil)
@@ -175,16 +176,28 @@ func actionProgramStatus(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
 	err = json.Unmarshal(body, &programs)
 	if err != nil {
 		return errors.New("json loads error: " + string(body))
 	}
 
-	format := "%-23s\t%-8s\n"
-	fmt.Printf(format, "PROGRAM NAME", "STATUS")
+	format := "%-23s\t%-8s\t%-8s\n"
+	fmt.Printf(format, "PROGRAM NAME", "STATUS", "PID")
 	for _, p := range programs {
-		fmt.Printf(format, p.Program.Name, p.Status)
+		fmt.Println(p.Cmd)
+		process := p.Cmd["Process"]
+		var strProcess string
+		if process != nil {
+			mapProcess := process.(map[string]interface{})
+			if mapProcess != nil {
+				if _, ok := mapProcess["Pid"]; ok {
+					if mapProcess["Pid"] != nil {
+						strProcess = strconv.FormatFloat(float64(mapProcess["Pid"].(float64)), 'f', 0, 64)
+					}
+				}
+			}
+		}
+		fmt.Printf(format, p.Program.Name, p.Status, strProcess)
 	}
 	return nil
 }

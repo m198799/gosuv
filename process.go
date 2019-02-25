@@ -20,7 +20,7 @@ import (
 type Process struct {
 	*FSM       `json:"-"`
 	Program    `json:"program"`
-	cmd        *kexec.KCommand
+	Cmd        *kexec.KCommand           `json:"cmd"`
 	Stdout     *QuickLossBroadcastWriter `json:"-"`
 	Stderr     *QuickLossBroadcastWriter `json:"-"`
 	Output     *QuickLossBroadcastWriter `json:"-"`
@@ -144,38 +144,38 @@ func (p *Process) stopCommand() {
 	defer p.mu.Unlock()
 	defer p.SetState(Stopped)
 
-	if p.cmd == nil {
+	if p.Cmd == nil {
 		log.Infof("[%s] not found command", p.Name)
 		return
 	}
 
 	p.SetState(Stopping)
 
-	if p.cmd.Process != nil {
-		p.cmd.Process.Signal(syscall.SIGTERM)
+	if p.Cmd.Process != nil {
+		p.Cmd.Process.Signal(syscall.SIGTERM)
 	}
 
 	select {
-	case <-GoFunc(p.cmd.Wait):
+	case <-GoFunc(p.Cmd.Wait):
 		log.Infof("[%s] program quit normally", p.Name)
 	case <-time.After(time.Duration(p.StopTimeout) * time.Second):
 		log.Infof("[%s] program terminate all", p.Name)
-		p.cmd.Terminate(syscall.SIGKILL)
+		p.Cmd.Terminate(syscall.SIGKILL)
 	}
 
-	err := p.cmd.Wait()
+	err := p.Cmd.Wait()
 
 	prefixStr := "\n--- GOSUV LOG " + time.Now().Format("2006-01-02 15:04:05")
 	if err == nil {
-		io.WriteString(p.cmd.Stderr, fmt.Sprintf("%s exit success ---\n\n", prefixStr))
+		io.WriteString(p.Cmd.Stderr, fmt.Sprintf("%s exit success ---\n\n", prefixStr))
 	} else {
-		io.WriteString(p.cmd.Stderr, fmt.Sprintf("%s exit fail %v ---\n\n", prefixStr, err))
+		io.WriteString(p.Cmd.Stderr, fmt.Sprintf("%s exit fail %v ---\n\n", prefixStr, err))
 	}
 	if p.OutputFile != nil {
 		p.OutputFile.Close()
 		p.OutputFile = nil
 	}
-	p.cmd = nil
+	p.Cmd = nil
 }
 
 func (p *Process) IsRunning() bool {
@@ -185,11 +185,11 @@ func (p *Process) IsRunning() bool {
 func (p *Process) startCommand() {
 
 	log.Infof("[%s] start cmd: %s", p.Name, p.Command)
-	p.cmd = p.buildCommand()
+	p.Cmd = p.buildCommand()
 
 	p.SetState(Running)
 	log.Tracef("[%s] state is %v", p.Name, p.Status)
-	if err := p.cmd.Start(); err != nil {
+	if err := p.Cmd.Start(); err != nil {
 		log.Warnf("[%s] program start failed: %v", p.Name, err)
 		p.SetState(Fatal)
 		return
@@ -199,7 +199,7 @@ func (p *Process) startCommand() {
 	go p.resetRetry()
 
 	go func() {
-		errC := GoFunc(p.cmd.Wait)
+		errC := GoFunc(p.Cmd.Wait)
 		startTime := time.Now()
 		select {
 		case <-errC:

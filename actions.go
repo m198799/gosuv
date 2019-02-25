@@ -122,8 +122,11 @@ func (s *Server) startServer(foregroud bool) error {
 				return err
 			}
 			log.Infof("sock file  %v", unixListenerAddr)
-			go http.Serve(unixListener, nil)
-			//time.Sleep(200 * time.Millisecond)
+			if s.HTTPServer {
+				go http.Serve(unixListener, nil)
+			} else {
+				log.Critical(http.Serve(unixListener, nil))
+			}
 		}
 		if s.HTTPServer {
 			_, err := net.DialTimeout("tcp", "127.0.0.1"+s.HTTPAddr, time.Millisecond*100)
@@ -131,7 +134,7 @@ func (s *Server) startServer(foregroud bool) error {
 				return errors.New("server listen" + listenAddr + "false:" + listenAddr + " is used ")
 			}
 			log.Infof("server listen on %v", listenAddr)
-			go http.ListenAndServe(listenAddr, nil)
+			log.Critical(http.ListenAndServe(listenAddr, nil))
 			//time.Sleep(200 * time.Millisecond)
 		}
 		if !s.HTTPServer && !s.UnixServer {
@@ -149,7 +152,7 @@ func (s *Server) startServer(foregroud bool) error {
 
 		// 写pidfile
 		if err := writePidFile(cmd.Process.Pid, s.PidFile); err != nil {
-			return fmt.Errorf("write pid file faild. ", s.PidFile, err)
+			return fmt.Errorf("write pid file faild %s, %v", s.PidFile, err)
 		}
 
 		select {
@@ -160,9 +163,8 @@ func (s *Server) startServer(foregroud bool) error {
 				os.Remove(s.PidFile)
 				return fmt.Errorf("server started failed,check log %s, %v\n", logFile, err)
 			}
+		case <-time.After(2 * time.Second):
 			fmt.Printf("server started, listening  %s %s \n", listenAddr, unixListenerAddr)
-			//case <-time.After(200 * time.Millisecond):
-			//	fmt.Printf("server started, listening  %s %s \n", listenAddr, unixListenerAddr)
 		}
 	}
 	return nil

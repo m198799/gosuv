@@ -31,7 +31,7 @@ func TestStopCommand(t *testing.T) {
 		p.startCommand()
 		time.Sleep(100 * time.Millisecond)
 		p.stopCommand()
-		So(p.cmd, ShouldBeNil)
+		So(p.Cmd, ShouldBeNil)
 		exists := findProcess("sleep 17")
 		So(exists, ShouldBeFalse)
 	})

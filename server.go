@@ -656,11 +656,11 @@ func (s *Supervisor) wsPerf(w http.ResponseWriter, r *http.Request) {
 	}
 	for {
 		// c.SetWriteDeadline(time.Now().Add(3 * time.Second))
-		if proc.cmd == nil || proc.cmd.Process == nil {
+		if proc.Cmd == nil || proc.Cmd.Process == nil {
 			log.Info("process not running")
 			return
 		}
-		pid := proc.cmd.Process.Pid
+		pid := proc.Cmd.Process.Pid
 		ps, err := gops.NewProcess(pid)
 		if err != nil {
 			break

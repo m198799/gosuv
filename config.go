@@ -61,12 +61,12 @@ func readConf(filename string) (c Configuration, err error) {
 	c.Server.HttpServer.Addr = ":11333"
 
 	c.Server.UnixServer.Enabled = true
-	c.Server.UnixServer.SockFile = path + "/.gosuv.sock"
+	c.Server.UnixServer.SockFile = path + "/" + DefaultSockFile
 
 	c.Server.Log.LogPath = path + "/logs"
 
-	c.Client.ServerURL = "unix://" + path + "/.gosuv.sock"
-	c.Server.PidFile = path + "/.gosuv.pid"
+	c.Client.ServerURL = "unix://" + path + "/" + DefaultSockFile
+	c.Server.PidFile = path + "/" + DefaultPidFile
 
 	c.Server.Log.Backups = 7
 	c.Server.Log.Level = "info"
@@ -103,8 +103,8 @@ server:
       ipfile: ./allow.list
   unix_http_server:
     enabled: true
-    sockfile: ./.gosuv.sock
-  pidfile: ./.gosuv.pid
+    sockfile: ./gosuv.sock
+  pidfile: ./gosuv.pid
   log:
     logpath: ./logs  # gosuv服务的日志会输出到 gosuv.log programs的日志会按program的名字存储在该目录中.
     level: info  # 只对gosuv服务的日志有效. program的日志是stdout stderr的日志内容.
