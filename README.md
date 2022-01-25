@@ -266,4 +266,6 @@ Only 4 states. [ref](http://supervisord.org/subprocess.html#process-states)
 
 代码重构源于github.com/codeskyblue/gosuv 有时间提交贡献代码.
 
+## 项目调整
 
+最近由于个人比较忙所以一直没做相应的调整。本次同步主要修复使用中遇到的大量bug。
