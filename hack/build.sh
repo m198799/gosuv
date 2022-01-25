@@ -22,8 +22,6 @@ go generate
 #CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 go build -tags vfs "$@"
 
-echo "123" $@
-
 rsync -a gosuv ${CURRENT_DIR}/bin/
 
 echo "new gosuv in ${CURRENT_DIR}/bin"
