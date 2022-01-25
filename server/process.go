@@ -1,7 +1,8 @@
-package main
+package server
 
 import (
 	"fmt"
+	"gosuv/utils"
 	"io"
 	"io/ioutil"
 	"os"
@@ -36,7 +37,7 @@ type Process struct {
 func (p *Process) buildCommand() *kexec.KCommand {
 	cmd := kexec.CommandString(p.Command)
 	logDir := filepath.Join(Cfg.Server.Log.LogPath, sanitize.Name(p.Name))
-	if !IsDir(logDir) {
+	if !utils.IsDir(logDir) {
 		os.MkdirAll(logDir, 0755)
 	}
 
@@ -156,7 +157,7 @@ func (p *Process) stopCommand() {
 	}
 
 	select {
-	case <-GoFunc(p.Cmd.Wait):
+	case <-utils.GoFunc(p.Cmd.Wait):
 		log.Infof("[%s] program quit normally", p.Name)
 	case <-time.After(time.Duration(p.StopTimeout) * time.Second):
 		log.Infof("[%s] program terminate all", p.Name)
@@ -199,7 +200,7 @@ func (p *Process) startCommand() {
 	go p.resetRetry()
 
 	go func() {
-		errC := GoFunc(p.Cmd.Wait)
+		errC := utils.GoFunc(p.Cmd.Wait)
 		startTime := time.Now()
 		select {
 		case <-errC:

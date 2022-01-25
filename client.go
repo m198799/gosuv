@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gosuv/server"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -40,27 +41,27 @@ type ActionMap struct {
 
 func NewClient() *Client {
 
-	unixServer := strings.HasPrefix(Cfg.Client.ServerURL, "unix://")
-	httpServer := strings.HasPrefix(Cfg.Client.ServerURL, "http://")
+	unixServer := strings.HasPrefix(server.Cfg.Client.ServerURL, "unix://")
+	httpServer := strings.HasPrefix(server.Cfg.Client.ServerURL, "http://")
 	if !(unixServer || httpServer) {
-		fmt.Printf("Please check client configure, ex: unix://%s or http://ip:port\n", DefaultSockFile)
-		log.Criticalf("client config is error , %v\n", Cfg.Client.ServerURL)
+		fmt.Printf("Please check client configure, ex: unix://%s or http://ip:port\n", server.DefaultSockFile)
+		log.Criticalf("client config is error , %v\n", server.Cfg.Client.ServerURL)
 		os.Exit(-1)
 	}
-	clientAddr := strings.Split(Cfg.Client.ServerURL, "//")
+	clientAddr := strings.Split(server.Cfg.Client.ServerURL, "//")
 	addr := clientAddr[1]
 
 	cl := &Client{
 		UnixClient: unixServer,
 		HTTPClient: httpServer,
-		User:       Cfg.Client.Username,
-		Password:   Cfg.Client.Password,
+		User:       server.Cfg.Client.Username,
+		Password:   server.Cfg.Client.Password,
 	}
 
-	if CfgDir == "" {
-		cl.ProgramFile = filepath.Join("./", DefaultProgramFile)
+	if server.CfgDir == "" {
+		cl.ProgramFile = filepath.Join("./", server.DefaultProgramFile)
 	} else {
-		cl.ProgramFile = filepath.Join(CfgDir, DefaultProgramFile)
+		cl.ProgramFile = filepath.Join(server.CfgDir, server.DefaultProgramFile)
 	}
 
 	if httpServer {
@@ -75,7 +76,7 @@ func NewClient() *Client {
 		cl.Addr = "http://unix"
 		sockFile := addr
 		if sockFile == "" {
-			sockFile = DefaultSockFile
+			sockFile = server.DefaultSockFile
 		}
 		cl.UnixHTTP = http.Client{
 			Transport: &http.Transport{
@@ -134,7 +135,7 @@ func actionStatus(c *cli.Context) error {
 		return err
 	}
 
-	var serverStatus JSONResponse
+	var serverStatus server.JSONResponse
 	err = json.Unmarshal(body, &serverStatus)
 	if err != nil {
 		return errors.New("json loads error: " + string(body))
@@ -151,7 +152,7 @@ func actionStatus(c *cli.Context) error {
 func actionProgramStatus(c *cli.Context) error {
 
 	var programs = make([]struct {
-		Program Program                `json:"program"`
+		Program server.Program         `json:"program"`
 		Status  string                 `json:"status"`
 		Cmd     map[string]interface{} `json:"cmd"`
 	}, 0)
@@ -260,7 +261,7 @@ func actionRestartProgram(c *cli.Context) (err error) {
 func programOperate(cmd, name string) (success bool, err error) {
 
 	request, _ := http.NewRequest(cl.Action["programs"].Method, cl.Addr+cl.Action["programs"].Uri+name+"/"+cmd, nil)
-	request.SetBasicAuth(Cfg.Server.Auth.User, Cfg.Server.Auth.Password)
+	request.SetBasicAuth(server.Cfg.Server.Auth.User, server.Cfg.Server.Auth.Password)
 
 	var resp *http.Response
 	if cl.UnixClient {
@@ -335,13 +336,13 @@ func actionReload(c *cli.Context) error {
 
 //查看gosuv版本
 func actionVersion(c *cli.Context) error {
-	fmt.Printf("gosuv version %s\n", Version)
+	fmt.Printf("gosuv version %s\n", server.Version)
 	return nil
 }
 
 //测试配置文件
 func actionConfigTest(c *cli.Context) error {
-	if _, _, err := newSupervisorHandler(); err != nil {
+	if _, _, err := server.NewSupervisorHandler(); err != nil {
 		return err
 	}
 	fmt.Println("test is successful")
@@ -361,7 +362,7 @@ func actionEdit(c *cli.Context) error {
 func actionServerStatus() error {
 
 	request, _ := http.NewRequest("GET", cl.Addr+"/api/status", nil)
-	request.SetBasicAuth(Cfg.Server.Auth.User, Cfg.Server.Auth.Password)
+	request.SetBasicAuth(server.Cfg.Server.Auth.User, server.Cfg.Server.Auth.Password)
 
 	var resp *http.Response
 	var err error
@@ -380,7 +381,7 @@ func actionServerStatus() error {
 	if err != nil {
 		return err
 	}
-	var ret JSONResponse
+	var ret server.JSONResponse
 	err = json.Unmarshal(body, &ret)
 	if err != nil {
 		return errors.New("json loads error: " + string(body))
@@ -391,7 +392,7 @@ func actionServerStatus() error {
 	return nil
 }
 
-func postForm(urlPath string, data url.Values) (r *JSONResponse, err error) {
+func postForm(urlPath string, data url.Values) (r *server.JSONResponse, err error) {
 
 	request, err := http.NewRequest("POST", urlPath, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -429,10 +430,10 @@ func actionKill(c *cli.Context) error {
 	//	return nil
 	//}
 
-	pidFile := Cfg.Server.PidFile
+	pidFile := server.Cfg.Server.PidFile
 
-	if Cfg.Server.PidFile == "" {
-		pidFile = DefaultPidFile
+	if server.Cfg.Server.PidFile == "" {
+		pidFile = server.DefaultPidFile
 	}
 
 	fi, err := os.Open(pidFile)

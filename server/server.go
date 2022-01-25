@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -18,9 +18,10 @@ import (
 	"syscall"
 	"time"
 
-	"gosuv/gops"
-
 	log "github.com/cihub/seelog"
+	"gosuv/assets"
+	"gosuv/gops"
+	"gosuv/utils"
 
 	"github.com/codeskyblue/kexec"
 	"github.com/go-yaml/yaml"
@@ -32,7 +33,7 @@ import (
 //var mutex sync.Mutex
 
 func init() {
-	http.Handle("/res/", http.StripPrefix("/res/", http.FileServer(Assets)))
+	http.Handle("/res/", http.StripPrefix("/res/", http.FileServer(assets.Assets)))
 }
 
 type Supervisor struct {
@@ -45,7 +46,7 @@ type Supervisor struct {
 	eventB  *WriteBroadcaster
 }
 
-func newSupervisorHandler() (suv *Supervisor, hdlr http.Handler, err error) {
+func NewSupervisorHandler() (suv *Supervisor, hdlr http.Handler, err error) {
 	suv = &Supervisor{
 		ConfigDir: CfgDir,
 		pgMap:     make(map[string]Program, 0),
@@ -277,7 +278,7 @@ type WebConfig struct {
 }
 
 func (s *Supervisor) renderHTML(w http.ResponseWriter, name string, data interface{}) {
-	file, err := Assets.Open(name + ".html")
+	file, err := assets.Assets.Open(name + ".html")
 	if err != nil {
 		panic(err)
 	}
@@ -559,8 +560,8 @@ func (s *Supervisor) hWebhook(w http.ResponseWriter, r *http.Request) {
 			cmd.Dir = proc.Program.Dir
 			cmd.Stdout = proc.Output
 			cmd.Stderr = proc.Output
-			err := GoTimeout(cmd.Run, time.Duration(hook.Timeout)*time.Second)
-			if err == ErrGoTimeout {
+			err := utils.GoTimeout(cmd.Run, time.Duration(hook.Timeout)*time.Second)
+			if err == utils.ErrGoTimeout {
 				cmd.Terminate(syscall.SIGTERM)
 			}
 			if err != nil {

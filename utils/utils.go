@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"errors"
@@ -116,12 +116,12 @@ func StringFormat(format string, m map[string]interface{}) string {
 	return format
 }
 
-func getCurrentPath() string {
+func GetCurrentPath() string {
 	pwd, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	return pwd
 }
 
-func getExecPath() string {
+func GetExecPath() string {
 	ex, _ := os.Executable()
 	return filepath.Dir(ex)
 }

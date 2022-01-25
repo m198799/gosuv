@@ -1,7 +1,8 @@
-package main
+package server
 
 import (
 	"github.com/go-yaml/yaml"
+	"gosuv/utils"
 	"io/ioutil"
 	"os"
 )
@@ -52,11 +53,11 @@ type GosuvLog struct {
 	Backups int    `yaml:"backups"`
 }
 
-func readConf(filename string) (c Configuration, err error) {
+func ReadConf(filename string) (c Configuration, err error) {
 	// initial default value
 	// 初始化配置文件 如果config.yml不存在的时候.
 
-	path := getExecPath()
+	path := utils.GetExecPath()
 	c.Server.HttpServer.Enabled = true
 	c.Server.HttpServer.Addr = ":11333"
 
@@ -80,7 +81,7 @@ func readConf(filename string) (c Configuration, err error) {
 	if err != nil {
 		return
 	}
-	if !IsDir(path) {
+	if !utils.IsDir(path) {
 		os.MkdirAll(path, 0755)
 	}
 	data, _ = yaml.Marshal(c)

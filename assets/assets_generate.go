@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 package main
@@ -10,10 +11,10 @@ import (
 )
 
 func main() {
-	var fs http.FileSystem = http.Dir("res")
+	var fs http.FileSystem = http.Dir("../res")
 
 	err := vfsgen.Generate(fs, vfsgen.Options{
-		PackageName:  "main",
+		PackageName:  "assets",
 		BuildTags:    "vfs",
 		VariableName: "Assets",
 	})

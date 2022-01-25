@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/urfave/cli"
+	"gosuv/server"
+	"gosuv/utils"
 	"os"
 	"path/filepath"
-
-	"github.com/urfave/cli"
 )
 
 var cl = &Client{}
@@ -13,24 +14,24 @@ var cl = &Client{}
 func main() {
 
 	//初始global 变量
-	CfgDir = getExecPath()
-	CurrentDir = getCurrentPath()
-	CmdDir = getExecPath()
+	server.CfgDir = utils.GetExecPath()
+	server.CurrentDir = utils.GetCurrentPath()
+	server.CmdDir = utils.GetExecPath()
 
 	app := cli.NewApp()
-	app.Name = AppName
-	app.Version = Version
+	app.Name = server.AppName
+	app.Version = server.Version
 	app.Usage = "golang supervisor"
 	app.Before = func(c *cli.Context) error {
 		var err error
-		CfgFile = c.GlobalString("conf")
+		server.CfgFile = c.GlobalString("conf")
 
-		if filepath.IsAbs(CfgFile) {
-			CfgDir = filepath.Dir(CfgFile)
+		if filepath.IsAbs(server.CfgFile) {
+			server.CfgDir = filepath.Dir(server.CfgFile)
 		} else {
-			CfgDir = filepath.Dir(filepath.Join(getExecPath(), CfgFile))
+			server.CfgDir = filepath.Dir(filepath.Join(utils.GetExecPath(), server.CfgFile))
 		}
-		Cfg, err = readConf(CfgFile)
+		server.Cfg, err = server.ReadConf(server.CfgFile)
 		if err != nil {
 			fmt.Printf("read conf failed,", err)
 			os.Exit(-1)
@@ -41,15 +42,15 @@ func main() {
 	}
 	app.Authors = []cli.Author{
 		cli.Author{
-			Name:  Author,
-			Email: Email,
+			Name:  server.Author,
+			Email: server.Email,
 		},
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "conf, c",
 			Usage: "config file",
-			Value: CfgFile + DefaultConfig,
+			Value: server.CfgFile + server.DefaultConfig,
 		},
 	}
 	app.Commands = []cli.Command{
@@ -64,7 +65,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "conf, c",
 					Usage: "config file",
-					Value: CfgFile + DefaultConfig,
+					Value: server.CfgFile + server.DefaultConfig,
 				},
 			},
 			Action: actionStartServer,

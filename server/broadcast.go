@@ -1,7 +1,8 @@
-package main
+package server
 
 import (
 	"errors"
+	"gosuv/utils"
 	"io"
 	"sync"
 	"time"
@@ -68,7 +69,7 @@ func (w *WriteBroadcaster) Write(p []byte) (n int, err error) {
 
 	for sw := range w.writers {
 		// set write timeout
-		err = GoTimeout(func() error {
+		err = utils.GoTimeout(func() error {
 			if _, err := sw.wc.Write(p); err != nil { //|| n != len(p) {
 				return errors.New("broadcast to " + sw.stream + " error")
 			}

@@ -12,7 +12,7 @@
 // 	...
 // }
 
-package main
+package server
 
 import (
 	"os"

@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gosuv/server"
+	"gosuv/utils"
+
 	//"log"
 	"errors"
 	"net"
@@ -38,15 +41,15 @@ var (
 
 func NewSer() Server {
 	return Server{
-		Cfg.Server.HttpServer.Enabled,
-		Cfg.Server.UnixServer.Enabled,
-		Cfg.Server.UnixServer.SockFile,
-		Cfg.Server.PidFile,
-		Cfg.Server.Auth.Enabled,
-		Cfg.Server.Auth.User,
-		Cfg.Server.Auth.Password,
-		Cfg.Server.Auth.IPFile,
-		Cfg.Server.HttpServer.Addr,
+		server.Cfg.Server.HttpServer.Enabled,
+		server.Cfg.Server.UnixServer.Enabled,
+		server.Cfg.Server.UnixServer.SockFile,
+		server.Cfg.Server.PidFile,
+		server.Cfg.Server.Auth.Enabled,
+		server.Cfg.Server.Auth.User,
+		server.Cfg.Server.Auth.Password,
+		server.Cfg.Server.Auth.IPFile,
+		server.Cfg.Server.HttpServer.Addr,
 	}
 }
 func actionStartServer(c *cli.Context) error {
@@ -85,8 +88,8 @@ func (s *Server) startServer(foregroud bool) error {
 		listenAddr = ""
 	}
 	//日志目录添加
-	logC := Cfg.Server.Log
-	logFile := filepath.Join(logC.LogPath, DefaultGoSuvLogFile)
+	logC := server.Cfg.Server.Log
+	logFile := filepath.Join(logC.LogPath, server.DefaultGoSuvLogFile)
 	if err := os.MkdirAll(logC.LogPath, os.FileMode(0755)); err != nil {
 		log.Criticalf("mkdir log path %s failed. %+v", logC.LogPath, err)
 		return err
@@ -100,7 +103,7 @@ func (s *Server) startServer(foregroud bool) error {
 		return fmt.Errorf("create file %s failed: %v", logFile, err)
 	}
 
-	suv, hdlr, err := newSupervisorHandler()
+	suv, hdlr, err := server.NewSupervisorHandler()
 	if err != nil {
 		return err
 	}
@@ -141,7 +144,7 @@ func (s *Server) startServer(foregroud bool) error {
 			return errors.New("server listen nothing ,exit .")
 		}
 	} else {
-		cmd := exec.Command(os.Args[0], "-c", CfgFile, "start-server", "-f")
+		cmd := exec.Command(os.Args[0], "-c", server.CfgFile, "start-server", "-f")
 		cmd.Stdout = logFd
 		cmd.Stderr = logFd
 
@@ -156,7 +159,7 @@ func (s *Server) startServer(foregroud bool) error {
 		}
 
 		select {
-		case err = <-GoFunc(cmd.Wait):
+		case err = <-utils.GoFunc(cmd.Wait):
 			if err != nil {
 				log.Infof("startServer false")
 				os.Remove(s.SockFile)
