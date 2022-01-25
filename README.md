@@ -1,8 +1,9 @@
 # gosuv
 
-gosuv是golang版的supervisor的进程管理程序,类似python版的superviosr. gosuv有安装部署简单,使用便利等优点. 
-
-wiki地址: 
+gosuv是golang版的supervisor的进程管理程序,类似python版的superviosr. 
+gosuv有安装部署简单,使用便利等优点. 
+本次同步主要修复使用中遇到的大量bug.
+如果在使用中遇到任何问题issues我会尽量解答，bug实在充裕情况下修复
 
 ## 当前版本 
 
@@ -265,7 +266,3 @@ Only 4 states. [ref](http://supervisord.org/subprocess.html#process-states)
 ## 声明
 
 代码重构源于github.com/codeskyblue/gosuv 有时间提交贡献代码.
-
-## 项目调整
-
-最近由于个人比较忙所以一直没做相应的调整。本次同步主要修复使用中遇到的大量bug。
