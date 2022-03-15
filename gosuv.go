@@ -33,18 +33,17 @@ func main() {
 		}
 		server.Cfg, err = server.ReadConf(server.CfgFile)
 		if err != nil {
-			fmt.Printf("read conf failed,", err)
+			fmt.Printf("read conf failed: %s", err)
 			os.Exit(-1)
 		}
 		//加载client配置
 		cl = NewClient()
 		return nil
 	}
-	app.Authors = []cli.Author{
-		cli.Author{
-			Name:  server.Author,
-			Email: server.Email,
-		},
+	app.Authors = []cli.Author{{
+		Name:  server.Author,
+		Email: server.Email,
+	},
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
