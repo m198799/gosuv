@@ -16,12 +16,9 @@ type Process struct {
 
 func NewProcess(pid int) (p Process, err error) {
 	mp, err := mps.FindProcess(pid)
-	if err != nil {
-		return
-	}
 	return Process{
 		Process: mp,
-	}, nil
+	}, err
 }
 
 // func (p *Process) Mem() (m sigar.ProcMem, err error) {
@@ -41,10 +38,11 @@ func (pi *ProcInfo) Add(add ProcInfo) {
 	pi.PCpu += add.PCpu
 }
 
-// CPU Percent * 100
+// ProcInfo CPU Percent * 100
 // only linux and darwin works
 func (p *Process) ProcInfo() (pi ProcInfo, err error) {
 	pi.Pid = p.Pid()
+	fmt.Println(pi.Pid)
 	cmd := exec.Command("ps", "-o", "pcpu,rss", "-p", strconv.Itoa(p.Pid()))
 	output, err := cmd.Output()
 	if err != nil {

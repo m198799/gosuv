@@ -3,7 +3,7 @@ package gops
 import "testing"
 
 func TestProcInfo(t *testing.T) {
-	p, err := NewProcess(6464)
+	p, err := NewProcess(1)
 	if err != nil {
 		t.Fatal(err)
 	}
