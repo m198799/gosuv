@@ -12,7 +12,6 @@ import (
 var cl = &Client{}
 
 func main() {
-
 	//初始global 变量
 	server.CfgDir = utils.GetExecPath()
 	server.CurrentDir = utils.GetCurrentPath()
